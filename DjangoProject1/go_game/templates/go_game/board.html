@@ -1,0 +1,41 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Go Game</title>
+    <link rel="stylesheet" href="{% static 'go_game/style.css' %}">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f5deb3; /* light wood */
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 { color: #8b4513; margin-bottom: 10px; }
+        h2 { color: #5c4033; margin-top: 30px; }
+        ul { text-align: left; display: inline-block; margin-top: 0; }
+        canvas { margin-top: 10px; border: 1px solid #8b4513; background-color: #deb887; }
+        .rule-section { margin-bottom: 40px; }
+        a.button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #8b4513;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        a.button:hover { background-color: #5c4033; }
+    </style>
+    <a class="button" href="{% url 'go_rules' %}">How to play</a>
+</head>
+<body>
+    <h1>Go Game</h1>
+
+    <canvas id="board" width="600" height="600"></canvas>
+
+    <script src="{% static 'go_game/board.js' %}"></script>
+</body>
+</html>

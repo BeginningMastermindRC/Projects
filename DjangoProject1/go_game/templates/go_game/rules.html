@@ -1,0 +1,152 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>How to Play Go</title>
+    <link rel="stylesheet" href="{% static 'go_game/style.css' %}">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #fdf5e6; /* light wood */
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 { color: #8b4513; margin-bottom: 10px; }
+        h2 { color: #5c4033; margin-top: 30px; }
+        ul { text-align: left; display: inline-block; margin-top: 0; }
+        canvas { margin-top: 10px; border: 1px solid #8b4513; background-color: #deb887; }
+        .rule-section { margin-bottom: 40px; }
+        a.button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #8b4513;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        a.button:hover { background-color: #5c4033; }
+    </style>
+</head>
+<body>
+    <h1>How to Play Go</h1>
+
+    <!-- 1️⃣ Objective -->
+    <div class="rule-section">
+        <h2>Objective</h2>
+        <p>Surround more territory than your opponent by placing stones on the board.</p>
+        <canvas id="objectiveBoard" width="180" height="180"></canvas>
+    </div>
+
+    <!-- 2️⃣ Placing Stones -->
+    <div class="rule-section">
+        <h2>Placing Stones</h2>
+        <p>Players alternate placing black and white stones on intersections.</p>
+        <canvas id="placingBoard" width="180" height="180"></canvas>
+    </div>
+
+    <!-- 3️⃣ Capture -->
+    <div class="rule-section">
+        <h2>Capturing Stones</h2>
+        <p>If a stone or group has no liberties (empty adjacent intersections), it is captured and removed.</p>
+        <canvas id="captureBoard" width="180" height="180"></canvas>
+    </div>
+
+    <!-- 4️⃣ Suicide -->
+    <div class="rule-section">
+        <h2>Suicide Rule</h2>
+        <p>You cannot place a stone that has no liberties unless it captures opponent stones.</p>
+        <canvas id="suicideBoard" width="180" height="180"></canvas>
+    </div>
+
+    <!-- 5️⃣ Ko Rule -->
+    <div class="rule-section">
+        <h2>Ko Rule</h2>
+        <p>You cannot immediately repeat the previous board position.</p>
+        <canvas id="koBoard" width="180" height="180"></canvas>
+    </div>
+
+    <a class="button" href="{% url 'go_board' %}">Back to the Board</a>
+
+    <script>
+        function drawMiniBoard(canvasId, boardData, highlight=null) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext("2d");
+            const size = boardData.length;
+            const cell = canvas.width / size;
+
+            // Background
+            ctx.fillStyle = "#deb887";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Grid
+            for (let i=0; i<size; i++){
+                ctx.beginPath();
+                ctx.moveTo(cell/2, cell/2 + i*cell);
+                ctx.lineTo(canvas.width - cell/2, cell/2 + i*cell);
+                ctx.strokeStyle="#000"; ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(cell/2 + i*cell, cell/2);
+                ctx.lineTo(cell/2 + i*cell, canvas.height - cell/2);
+                ctx.strokeStyle="#000"; ctx.stroke();
+            }
+
+            // Stones
+            for (let y=0; y<size; y++){
+                for (let x=0; x<size; x++){
+                    if (boardData[y][x]){
+                        ctx.beginPath();
+                        ctx.arc(cell/2 + x*cell, cell/2 + y*cell, cell/3, 0, Math.PI*2);
+                        ctx.fillStyle = boardData[y][x];
+                        ctx.fill();
+                        ctx.strokeStyle="black"; ctx.stroke();
+                    }
+                    // highlight forbidden move for suicide/ko
+                    if (highlight && highlight[0] === x && highlight[1] === y){
+                        ctx.beginPath();
+                        ctx.arc(cell/2 + x*cell, cell/2 + y*cell, cell/3, 0, Math.PI*2);
+                        ctx.strokeStyle = "red"; ctx.lineWidth = 3; ctx.stroke();
+                        ctx.lineWidth = 1;
+                    }
+                }
+            }
+        }
+
+        // 1️⃣ Objective board (empty 5x5)
+        drawMiniBoard("objectiveBoard", Array(5).fill().map(()=>Array(5).fill(null)));
+
+        // 2️⃣ Placing stones (3x3 alternating)
+        drawMiniBoard("placingBoard", [
+            ["black", null, null],
+            [null, "white", null],
+            [null, null, "black"]
+        ]);
+
+        // 3️⃣ Capture example (white surrounded)
+        drawMiniBoard("captureBoard", [
+            ["black","black","black"],
+            ["black","white",null],
+            [null,null,null]
+        ]);
+        // step2: white would disappear if black plays at [1,2] (shown in tutorial text)
+
+        // 4️⃣ Suicide example (red outline forbidden)
+        drawMiniBoard("suicideBoard", [
+            ["black","black","black"],
+            ["black",null,"black"],
+            ["black","black","black"]
+        ], [1,1]);
+
+        // 5️⃣ Ko example (simple 4x4)
+        drawMiniBoard("koBoard", [
+            ["black","white","black","black"],
+            ["white","black","white","white"],
+            ["black","white","black","black"],
+            ["white","black","white",null]
+        ], [3,3]); // last move forbidden (Ko)
+    </script>
+</body>
+</html>
