@@ -1,7 +1,7 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <title>How to Play Go</title>
     <link rel="stylesheet" href="{% static 'go_game/style.css' %}">
@@ -31,44 +31,51 @@
     </style>
 </head>
 <body>
-    <h1>How to Play Go</h1>
+    <h1>Правила игры</h1>
 
     <!-- 1️⃣ Objective -->
     <div class="rule-section">
-        <h2>Objective</h2>
-        <p>Surround more territory than your opponent by placing stones on the board.</p>
+        <h2>Задача</h2>
+        <p>Окружить большую территорию, чем у соперника, используя камни.</p>
         <canvas id="objectiveBoard" width="180" height="180"></canvas>
     </div>
 
     <!-- 2️⃣ Placing Stones -->
     <div class="rule-section">
-        <h2>Placing Stones</h2>
-        <p>Players alternate placing black and white stones on intersections.</p>
+        <h2>Постановка камней</h2>
+        <p>Игроки поочередно выставляют камни на поле, начиная с черных.</p>
         <canvas id="placingBoard" width="180" height="180"></canvas>
     </div>
 
     <!-- 3️⃣ Capture -->
     <div class="rule-section">
-        <h2>Capturing Stones</h2>
-        <p>If a stone or group has no liberties (empty adjacent intersections), it is captured and removed.</p>
+        <h2>Захват камней</h2>
+        <p>Если у камня или группы камней нет свободных участков (пустых смежных пересечений), их захватывают и убирают.</p>
         <canvas id="captureBoard" width="180" height="180"></canvas>
     </div>
 
     <!-- 4️⃣ Suicide -->
     <div class="rule-section">
-        <h2>Suicide Rule</h2>
-        <p>You cannot place a stone that has no liberties unless it captures opponent stones.</p>
+        <h2>Правило самоубийства</h2>
+        <p>Нельзя разместить камень, не обладающий свободой действий, если он не захватит камни противника.</p>
         <canvas id="suicideBoard" width="180" height="180"></canvas>
     </div>
 
     <!-- 5️⃣ Ko Rule -->
+
     <div class="rule-section">
-        <h2>Ko Rule</h2>
-        <p>You cannot immediately repeat the previous board position.</p>
+        <h2>Правило "Ко"</h2>
+        <p>Игроки не могут сразу же повторить предыдущую позицию на доске.</p>
         <canvas id="koBoard" width="180" height="180"></canvas>
     </div>
 
-    <a class="button" href="{% url 'go_board' %}">Back to the Board</a>
+    <div class="rule-section">
+        <h2>Подсчёт очков</h2>
+        <p>Очки подсчитываются согласно захваченной территории. Игра заканчивается, когда оба игрока готовы её закончить или на доске не остаётся полезных ходов.
+            У белых, в связи с началом хода черных, имеется небольшое преимущество по очкам.</p>
+    </div>
+
+    <a class="button" href="{% url 'go_board' %}">Вернуться на доску</a>
 
     <script>
         function drawMiniBoard(canvasId, boardData, highlight=null) {
